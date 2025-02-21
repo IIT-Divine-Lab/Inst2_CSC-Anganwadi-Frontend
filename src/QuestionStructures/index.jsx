@@ -29,8 +29,6 @@ import Teddy from "../Images/teddyBear.png"
 import DemoSpeaker from "../Images/demoSpeaker.png"
 import Structure7 from './Structure7';
 import Structure8 from './Structure8';
-import { uploadFile } from '@uploadcare/upload-client'
-import toggleLoading from '../redux/actions/loadingActions';
 
 const QuestionStructures = () => {
    const [selected, setSelected] = useState([]);
@@ -324,8 +322,11 @@ const QuestionStructures = () => {
       setShowGrid(false);
 
       // Use a timeout to allow the state change to reflect in the UI
+
+      // eslint-disable-next-line
       const dataURL = dataURLToBlob(stageRef.current?.toDataURL());
       setShowGrid(true);
+
       // console.log(stageRef.current?.toDataURL());
       // console.log(dataURL)
       // console.log(JSON.stringify(dataURL))
