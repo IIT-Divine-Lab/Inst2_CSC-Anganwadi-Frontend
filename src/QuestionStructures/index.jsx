@@ -325,23 +325,13 @@ const QuestionStructures = () => {
 
       // Use a timeout to allow the state change to reflect in the UI
       const dataURL = dataURLToBlob(stageRef.current?.toDataURL());
-      dispatch(toggleLoading(true))
-      const result = await uploadFile(
-         dataURL,
-         {
-            publicKey: 'f0b48dbfeaff1298ebed',
-            store: 'auto',
-            metadata: {
-               subsystem: 'js-client',
-               pet: 'cat'
-            }
-         }
-      )
-      // Optionally, show grid again after saving
-      dispatch(toggleLoading(false))
       setShowGrid(true);
-
-      return result.cdnUrl
+      // console.log(stageRef.current?.toDataURL());
+      // console.log(dataURL)
+      // console.log(JSON.stringify(dataURL))
+      // console.log(typeof (JSON.stringify(dataURL)))
+      return stageRef.current?.toDataURL()
+      // return (JSON.stringify(dataURL));
    };
 
    return (
