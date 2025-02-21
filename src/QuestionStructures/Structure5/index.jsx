@@ -6,6 +6,19 @@ const Structure5 = ({ question, selected, handleSelection }) => {
    const [column, setColumn] = useState(0);
    const optionContainerRef = useRef([]);
 
+   const getSourceURL = (obj, type = "image") => {
+      try {
+         if (typeof (obj?.filePath) === "object") {
+            let bufferURL = URL.createObjectURL(new Blob([new Uint8Array(obj.filePath.data)], { type: "image/png" }))
+            return bufferURL;
+         }
+         return URL.createObjectURL(obj);
+      }
+      catch (error) {
+         return `data:image/png;base64,${obj?.filePath}`
+      }
+   }
+
    useEffect(() => {
       if (column === 0) {
          let quotient = Math.ceil(question.totalOptions / 5);
@@ -17,12 +30,12 @@ const Structure5 = ({ question, selected, handleSelection }) => {
             optionContainerRef.current.children[i].children[0].style.height = "180px";
          }
       }
-      else if (question.totalOptions === 10) {
-         [2, 3, 6, 7, 10].forEach((val) => {
-            optionContainerRef.current.children[val - 1].children[0].style.width = "120px";
-            optionContainerRef.current.children[val - 1].children[0].style.height = "120px";
-         })
-      }
+      // else if (question.totalOptions === 10) {
+      //    [2, 3, 6, 7, 10].forEach((val) => {
+      //       optionContainerRef.current.children[val - 1].children[0].style.width = "120px";
+      //       optionContainerRef.current.children[val - 1].children[0].style.height = "120px";
+      //    })
+      // }
    }, [column, question])
 
    return (
@@ -36,7 +49,7 @@ const Structure5 = ({ question, selected, handleSelection }) => {
                   <div className='s5option' key={index}>
                      <div onClick={() => handleSelection("o" + (index + 1))}>
                         <img
-                           src={question.option["o" + (index + 1)]}
+                           src={question.option !== undefined ? getSourceURL(question.option[index]) : undefined}
                            className={selected.includes("o" + (index + 1)) ? 'selected' : 'unselected'}
                            alt=""
                         />

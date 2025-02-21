@@ -346,7 +346,7 @@ const QuestionStructures = () => {
 
    return (
       <ParentContainer>
-         <div style={{ width: "100%", textAlign: "right", fontSize: "20px", height: "max-content", fontWeight: "600", color: questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("AAA") ? "#aaa" : "#fff" }}>
+         <div style={{ width: "100%", textAlign: "right", fontSize: "20px", height: "max-content", fontWeight: "600", color: questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("Demo") ? "#aaa" : "#fff" }}>
             Demo
          </div>
          {
