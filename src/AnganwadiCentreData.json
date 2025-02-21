@@ -1,0 +1,62 @@
+[
+   {
+      "state": "A",
+      "district": "AA",
+      "awcentre": "AAA"
+   },
+   {
+      "state": "A",
+      "district": "AA",
+      "awcentre": "AAB"
+   },
+   {
+      "state": "A",
+      "district": "AB",
+      "awcentre": "ABA"
+   },
+   {
+      "state": "A",
+      "district": "AB",
+      "awcentre": "ABA"
+   },
+   {
+      "state": "B",
+      "district": "BA",
+      "awcentre": "BAA"
+   },
+   {
+      "state": "B",
+      "district": "BA",
+      "awcentre": "BAB"
+   },
+   {
+      "state": "B",
+      "district": "BB",
+      "awcentre": "BBA"
+   },
+   {
+      "state": "B",
+      "district": "BB",
+      "awcentre": "BBB"
+   },
+   {
+      "state": "C",
+      "district": "CA",
+      "awcentre": "CAA"
+   },
+   {
+      "state": "C",
+      "district": "CA",
+      "awcentre": "CAB"
+   },
+   {
+      "state": "C",
+      "district": "CB",
+      "awcentre": "CBA"
+   },
+   {
+      "state": "C",
+      "district": "CB",
+      "awcentre": "CBB"
+   }
+]

@@ -7,16 +7,27 @@ import { setUser } from '../redux/actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import toggleLoading from '../redux/actions/loadingActions';
+import data from "../AnganwadiCentreData.json"
 
 const Login = () => {
    const navigate = useNavigate();
    const user = useSelector((state) => state.user);
 
    const [name, setName] = useState("");
-   const [age, setAgeGroup] = useState("");
-   const [rollno, setRollno] = useState(0);
+   const [year, setYear] = useState("none");
+   const [month, setMonth] = useState("none");
    const [gender, setGender] = useState("");
-   const [awcentre, setAwCentre] = useState("");
+   const [selectedState, setSelectedState] = useState("");
+   const [selectedDistrict, setSelectedDistrict] = useState("");
+   const [selectedCentre, setSelectedCentre] = useState("");
+
+   const states = [...new Set(data.map((item) => item.state))];
+   const districts = selectedState
+      ? [...new Set(data.filter((item) => item.state === selectedState).map((item) => item.district))]
+      : [];
+   const centres = selectedDistrict
+      ? [...new Set(data.filter((item) => item.district === selectedDistrict).map((item) => item.awcentre))]
+      : [];
    const dispatch = useDispatch();
 
    const fullScreenMode = () => {
@@ -33,7 +44,8 @@ const Login = () => {
    }
 
    const submitUserDetails = async () => {
-      if (name === "" || age === "" || rollno === 0 || gender === "" || awcentre === "") {
+      // console.log();
+      if (name === "" || year === "none" || month === "none" || gender === "" || selectedCentre === "") {
          toast("Fill all details to proceed", {
             type: "warning",
             autoClose: 2000,
@@ -45,14 +57,15 @@ const Login = () => {
          dispatch(toggleLoading(true))
          let userData = {
             name,
-            age,
-            rollno,
+            age: Number(year) === 3 ? "3-4" : Number(year) === 4 ? "4-5" : Number(year) === 5 ? "5-6" : "",
+            rollno: Number(month) >= 10 ? Number(year) + (Number(month) / 100) : Number(year) + (Number(month) / 10),
             gender,
-            awcentre
+            awcentre: selectedCentre
          }
          await axios.post(apiUrl + "user", userData)
             .then(({ data }) => {
                if (data.message === "Success") {
+                  // console.log(data.user);
                   dispatch(setUser(data.user));
                   dispatch(toggleLoading(false));
                   toast("Registered. Starting assessment", {
@@ -105,18 +118,29 @@ const Login = () => {
                      <label className="form-field-label">Name</label>
                      <input type="text" value={name} onChange={(e) => setName(e.currentTarget.value)} name="name" id="name" className="form-field" placeholder='Enter your full name' />
                   </div>
-                  <div className='form-field-container'>
-                     <label className="form-field-label">Age Group</label>
-                     <select name="ageGroup" id="ageGroup" className='form-field' value={age} onChange={(e) => setAgeGroup(e.currentTarget.value)}>
-                        <option value="none">Select your age group</option>
-                        <option value="3-4">3 - 4</option>
-                        <option value="4-5">4 - 5</option>
-                        <option value="5-6">5 - 6</option>
-                     </select>
-                  </div>
-                  <div className='form-field-container'>
-                     <label className="form-field-label">Roll Number</label>
-                     <input type="number" value={rollno} onChange={(e) => setRollno(e.currentTarget.value)} name="rollno" id="rollno" className="form-field" placeholder='Enter your roll number' />
+                  <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center", marginTop: "24px" }}>
+                     <div style={{ width: "47%" }} className='form-field-container'>
+                        <label className="form-field-label">Years</label>
+                        <select name="ageGroup" id="ageGroup" className='form-field' value={year} onChange={(e) => setYear(e.currentTarget.value)}>
+                           <option value="none">Select years</option>
+                           {
+                              [3, 4, 5].map((age) => {
+                                 return <option key={age} value={age}>{age}</option>
+                              })
+                           }
+                        </select>
+                     </div>
+                     <div style={{ marginTop: 0, width: "47%" }} className='form-field-container'>
+                        <label className="form-field-label">Months</label>
+                        <select name="ageGroup" id="ageGroup" className='form-field' value={month} onChange={(e) => setMonth(e.currentTarget.value)}>
+                           <option value="none">Select months</option>
+                           {
+                              [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((age) => {
+                                 return <option key={age} value={age}>{age}</option>
+                              })
+                           }
+                        </select>
+                     </div>
                   </div>
                   <div className='form-field-container'>
                      <label className="form-field-label">Gender</label>
@@ -126,9 +150,40 @@ const Login = () => {
                         <option value="female">Female</option>
                      </select>
                   </div>
+                  <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center", marginTop: "24px" }}>
+                     <div style={{ width: "47%" }} className='form-field-container'>
+                        <label className="form-field-label">State</label>
+                        <select name="ageGroup" id="ageGroup" className='form-field' value={selectedState} onChange={(e) => setSelectedState(e.currentTarget.value)}>
+                           <option value="none">Select state</option>
+                           {
+                              states.map((age) => {
+                                 return <option key={age} value={age}>{age}</option>
+                              })
+                           }
+                        </select>
+                     </div>
+                     <div style={{ marginTop: 0, width: "47%" }} className='form-field-container'>
+                        <label className="form-field-label">District</label>
+                        <select name="ageGroup" id="ageGroup" className='form-field' value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.currentTarget.value)}>
+                           <option value="none">Select district</option>
+                           {
+                              districts.map((age) => {
+                                 return <option key={age} value={age}>{age}</option>
+                              })
+                           }
+                        </select>
+                     </div>
+                  </div>
                   <div className='form-field-container'>
-                     <label className="form-field-label">Anganwadi Center</label>
-                     <input type="text" name="awcentre" value={awcentre} onChange={(e) => setAwCentre(e.currentTarget.value)} id="awcentre" className="form-field" placeholder='Enter your Anganwadi Centre' />
+                     <label className="form-field-label">Anganwadi Centre</label>
+                     <select name="ageGroup" id="ageGroup" className='form-field' value={selectedCentre} onChange={(e) => setSelectedCentre(e.currentTarget.value)}>
+                        <option value="none">Select anganwadi centre</option>
+                        {
+                           centres.map((age) => {
+                              return <option key={age} value={age}>{age}</option>
+                           })
+                        }
+                     </select>
                   </div>
                </div>
                <div className="form-submit" onClick={submitUserDetails}>
