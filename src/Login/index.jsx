@@ -60,7 +60,7 @@ const Login = () => {
             age: Number(year) === 3 ? "3-4" : Number(year) === 4 ? "4-5" : Number(year) === 5 ? "5-6" : "",
             rollno: Number(month) >= 10 ? Number(year) + (Number(month) / 100) : Number(year) + (Number(month) / 10),
             gender,
-            awcentre: selectedState + " & " + selectedDistrict + " & " + selectedCentre
+            awcentre: selectedState + " - " + selectedDistrict + " - " + selectedCentre
          }
          await axios.post(apiUrl + "user", userData)
             .then(({ data }) => {
