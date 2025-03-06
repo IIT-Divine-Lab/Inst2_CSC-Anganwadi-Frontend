@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Heading from '../../Common/Heading'
 import "./style.css"
 
-const Structure5 = ({ question, selected, handleSelection }) => {
+const Structure5 = ({ setStartTime, question, selected, handleSelection }) => {
    const [column, setColumn] = useState(0);
    const optionContainerRef = useRef([]);
 
@@ -49,6 +49,7 @@ const Structure5 = ({ question, selected, handleSelection }) => {
                   <div className='s5option' key={index}>
                      <div onClick={() => handleSelection("o" + (index + 1))}>
                         <img
+                           onLoad={() => setStartTime(Date.now())}
                            src={question.option !== undefined ? getSourceURL(question.option[index]) : undefined}
                            className={selected.includes("o" + (index + 1)) ? 'selected' : 'unselected'}
                            alt=""

@@ -13,7 +13,12 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-const EXPIRY_INTERVAL = 120000;
+// 1000 milliseconds to 1 second
+// 60 seconds to 1 minute
+// 60 minutes to 1 hour
+// 1 hour * 4 = 4 hours
+// const EXPIRY_INTERVAL = 1000 * 60 * 4;
+const EXPIRY_INTERVAL = 1000 * 60 * 60 * 4;
 
 // eslint-disable-next-line
 const expireTransform = createTransform(
@@ -21,10 +26,12 @@ const expireTransform = createTransform(
       // Save only once when state is persisted
       return {
          ...inboundState,
-         timestamp: Date.now() + 19800000,
+         timestamp: Date.now() + 19800000
       };
    },
    (outboundState) => {
+      if (!outboundState || !outboundState?.timestamp) return undefined; // Prevent errors
+
       const currentTime = Date.now() + 19800000
       const globalTime = currentTime - outboundState.timestamp;
 
@@ -55,7 +62,7 @@ const expireTransform = createTransform(
 const persistConfig = {
    key: 'root',
    storage,
-   // transforms: [expireTransform]
+   transforms: [expireTransform]
 };
 
 const reducer = persistReducer(persistConfig, AllReducer);

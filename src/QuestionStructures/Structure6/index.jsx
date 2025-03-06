@@ -3,7 +3,7 @@ import './style.css'
 import Heading from '../../Common/Heading'
 import Body from '../../Common/Body'
 
-const Structure6 = ({ activeOption, setActiveOption, question }) => {
+const Structure6 = ({ setStartTime, activeOption, setActiveOption, question }) => {
 
    const getSourceURL = (obj) => {
       try {
@@ -32,12 +32,12 @@ const Structure6 = ({ activeOption, setActiveOption, question }) => {
                <img className='quesImage' src={question?.questionImage?.after !== undefined ? getSourceURL(question?.questionImage?.after) : undefined} alt="" />
             </div>
             <div className="s2OptionImage">
-               <img src={question.answerImage !== undefined ? getSourceURL(question.answerImage) : undefined} alt="" />
+               <img onLoad={() => setStartTime(Date.now())} src={question.answerImage !== undefined ? getSourceURL(question.answerImage) : undefined} alt="" />
                <div className="options">
-                  <img className='egg' src={activeOption === 1 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(1)} />
-                  <img className='egg' src={activeOption === 2 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(2)} />
-                  <img className='egg' src={activeOption === 3 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(3)} />
-                  <img className='egg' src={activeOption === 4 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(4)} />
+                  <img onLoad={() => setStartTime(Date.now())} className='egg' src={activeOption === 1 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(1)} />
+                  <img onLoad={() => setStartTime(Date.now())} className='egg' src={activeOption === 2 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(2)} />
+                  <img onLoad={() => setStartTime(Date.now())} className='egg' src={activeOption === 3 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(3)} />
+                  <img onLoad={() => setStartTime(Date.now())} className='egg' src={activeOption === 4 ? question.option[0] !== undefined ? getSourceURL(question.option[0]) : undefined : question.option[1] !== undefined ? getSourceURL(question.option[1]) : undefined} alt="" onClick={() => setActiveOption(4)} />
                </div>
             </div>
          </Body>

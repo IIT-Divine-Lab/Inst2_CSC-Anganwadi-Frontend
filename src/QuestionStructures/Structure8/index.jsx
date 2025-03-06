@@ -6,7 +6,7 @@ import { Stage, Layer, Line, Rect, Circle } from 'react-konva';
 import { ImUndo } from "react-icons/im";
 import { FiTrash2 } from "react-icons/fi";
 
-const Structure8 = ({ question, showGrid, stageRef }) => {
+const Structure8 = ({ setStartTime, question, showGrid, stageRef }) => {
    const [lines, setLines] = useState([]);
    const [redoLines, setRedoLines] = useState([]); // Track lines for redo
    const [cursorPosition, setCursorPosition] = useState({ x: -10, y: -10 }); // initial off-canvas
@@ -135,12 +135,13 @@ const Structure8 = ({ question, showGrid, stageRef }) => {
             <div style={{
                marginBottom: "40px"
             }}>
-               <img style={{ height: "300px", width: "auto" }} className='quesImageAfter' src={question.questionImage.after !== undefined ? getSourceURL(question.questionImage.after) : undefined} alt="" />
+               <img onLoad={() => setStartTime(Date.now())} style={{ height: "300px", width: "auto" }} className='quesImageAfter' src={question.questionImage.after !== undefined ? getSourceURL(question.questionImage.after) : undefined} alt="" />
             </div>
             <div style={{ position: "relative" }}>
                <Stage
                   width={stageWidth}
                   height={stageHeight}
+                  onLoad={() => setStartTime(Date.now())}
                   onMouseDown={handleStartDrawing}
                   onMousemove={handleDraw}
                   onMouseup={handleEndDrawing}

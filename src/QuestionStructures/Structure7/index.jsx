@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Heading from '../../Common/Heading';
 
-const Structure7 = ({ leftColumn, rightColumn, question, handleSelection }) => {
+const Structure7 = ({ setStartTime, leftColumn, rightColumn, question, handleSelection }) => {
 
    const colors = [
       {
@@ -77,7 +77,7 @@ const Structure7 = ({ leftColumn, rightColumn, question, handleSelection }) => {
    }
 
    useEffect(() => {
-      if(question){
+      if (question) {
          setMatchedLeft([]);
          setMatchedRight([]);
          setMatches([]);
@@ -125,7 +125,7 @@ const Structure7 = ({ leftColumn, rightColumn, question, handleSelection }) => {
                            height: "85px",
                            width: "auto"
                         }}>
-                           <img src={item.src} alt={item.val} />
+                           <img onLoad={() => setStartTime(Date.now())} src={item.src} alt={item.val} />
                         </div>
                         <span style={{
                            marginLeft: "10px",
@@ -186,7 +186,7 @@ const Structure7 = ({ leftColumn, rightColumn, question, handleSelection }) => {
                            height: "85px",
                            width: "auto"
                         }}>
-                           <img style={{ height: "100%" }} src={item.src} alt={item.val} />
+                           <img onLoad={() => setStartTime(Date.now())} style={{ height: "100%" }} src={item.src} alt={item.val} />
                         </div>
                      </div>
                   })}

@@ -29,20 +29,23 @@ import Teddy from "../Images/teddyBear.png"
 import DemoSpeaker from "../Images/demoSpeaker.png"
 import Structure7 from './Structure7';
 import Structure8 from './Structure8';
+import Loading from '../Loading';
 
 const QuestionStructures = () => {
    const [selected, setSelected] = useState([]);
    // State to control visibility of layers (e.g., grid lines or others you may want to exclude)
    const [showGrid, setShowGrid] = useState(true);
+   const [showSubmitLoader, setShowSubmitLoader] = useState("no");
+   const [startTime, setStartTime] = useState(undefined);
    const stageRef = useRef(null);
    const navigate = useNavigate()
-   const user = useSelector(state => state.user);
-   const allQuestions = useSelector(state => state.allQuestions);
-   const counter = useSelector(state => state.currentQuestion.counter);
-   const questionDet = useSelector(state => state.allQuestions)[counter];
-   const question = questionDet !== undefined ? questionDet.question : "";
+   const user = useSelector(state => state?.user);
+   const allQuestions = useSelector(state => state?.allQuestions);
+   const counter = useSelector(state => state?.currentQuestion?.counter);
+   const questionDet = useSelector(state => state?.allQuestions)?.[counter];
+   const question = questionDet !== undefined ? questionDet?.question : "";
 
-   const questionAnswer = useSelector(state => state.questionAnswered);
+   const questionAnswer = useSelector(state => state?.questionAnswered);
    const dispatch = useDispatch();
 
    const leftColumn = {
@@ -150,6 +153,17 @@ const QuestionStructures = () => {
          element.msRequestFullscreen();
       }
    }
+   const exitFullScreenMode = () => {
+      if (document.exitFullscreen) {
+         document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { // Safari
+         document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) { // Firefox
+         document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) { // IE/Edge
+         document.msExitFullscreen();
+      }
+   }
 
    const fetchQuestions = useCallback(async () => {
       await axios.post(apiUrl + "assessment/agewise", { ageGroup: user.age })
@@ -169,16 +183,31 @@ const QuestionStructures = () => {
    }, [dispatch, user]);
 
    const saveQuestion = async () => {
-
+      const timeTaken = Date.now() - startTime;
       let answer;
-      if (activeOption === undefined && question.questionType === "single") return;
-      if (selected.length === 0 && question.questionType === "multi") return;
+      if (activeOption === undefined && question.questionType === "single") {
+         toast.info("Please select an answer", {
+            autoClose: 1500,
+            theme: "colored",
+            hideProgressBar: true
+         })
+         return;
+      }
+      if (selected.length === 0 && question.questionType === "multi") {
+         toast.info("Please select an answer", {
+            autoClose: 1500,
+            theme: "colored",
+            hideProgressBar: true
+         })
+         return;
+      }
       if (question.structure !== 8) {
          if (question.questionType === "single")
             answer = {
                quesId: questionDet._id,
                quesCategory: questionDet.quesCategory,
-               AnswerMarked: "o" + activeOption
+               AnswerMarked: "o" + activeOption,
+               timeTaken
             }
          else {
             let a = []
@@ -188,7 +217,8 @@ const QuestionStructures = () => {
             answer = {
                quesId: questionDet._id,
                quesCategory: questionDet.quesCategory,
-               AnswerMarked: a
+               AnswerMarked: a,
+               timeTaken
             }
          }
       }
@@ -197,7 +227,8 @@ const QuestionStructures = () => {
          answer = {
             quesId: questionDet._id,
             quesCategory: questionDet.quesCategory,
-            AnswerMarked: answerImageDrawn
+            AnswerMarked: answerImageDrawn,
+            timeTaken
          }
       }
       if (questionAnswer.questions.length === 0) {
@@ -207,22 +238,43 @@ const QuestionStructures = () => {
          dispatch(questionAnswered(answer));
       }
       fullScreenMode();
+      console.log("\n Counter", counter);
       dispatch(currentQuestion(counter + 1));
-      setLastQuestion(allQuestions.length - counter - 2);
+      setLastQuestion(typeof (allQuestions) === "object" ? Object.keys(allQuestions).length - counter - 2 : allQuestions?.length - counter - 2);
+      console.log("\n Time in Milliseconds", timeTaken);
+      console.log("\n Time in h:m:s", + Math.floor((timeTaken % (24 * 3600000)) / 3600000) + " hours : " + Math.floor((timeTaken % 3600000) / 60000) + " minutes : " + Math.floor((timeTaken % 60000) / 1000) + " seconds : " + timeTaken % 1000 + " milliseconds");
+      setStartTime();
       setActiveOption();
       setSelected([]);
    }
 
    const submitAssessment = async () => {
+      const endTime = Date.now();
+      setShowSubmitLoader("Submitting");
       let answer;
-      if (activeOption === undefined && question.questionType === "single") return;
-      if (selected.length === 0 && question.questionType === "multi") return;
+      if (activeOption === undefined && question.questionType === "single") {
+         toast.info("Please select an answer", {
+            autoClose: 1500,
+            theme: "colored",
+            hideProgressBar: true
+         })
+         return;
+      }
+      if (selected.length === 0 && question.questionType === "multi") {
+         toast.info("Please select an answer", {
+            autoClose: 1500,
+            theme: "colored",
+            hideProgressBar: true
+         })
+         return;
+      }
       if (question.structure !== 8) {
          if (question.questionType === "single")
             answer = {
                quesId: questionDet._id,
                quesCategory: questionDet.quesCategory,
-               AnswerMarked: "o" + activeOption
+               AnswerMarked: "o" + activeOption,
+               timeTaken: endTime - startTime
             }
          else {
             let a = []
@@ -232,7 +284,8 @@ const QuestionStructures = () => {
             answer = {
                quesId: questionDet._id,
                quesCategory: questionDet.quesCategory,
-               AnswerMarked: a
+               AnswerMarked: a,
+               timeTaken: endTime - startTime
             }
          }
       }
@@ -241,29 +294,49 @@ const QuestionStructures = () => {
          answer = {
             quesId: questionDet._id,
             quesCategory: questionDet.quesCategory,
-            AnswerMarked: answerImageDrawn
+            AnswerMarked: answerImageDrawn,
+            timeTaken: endTime - startTime
          }
       }
-      if (questionAnswer.questions.length === 0) {
+      if (questionAnswer?.questions.length === 0) {
          dispatch(firstQuestionAnswered(user._id, answer));
       }
-      else if (questionAnswer.questions.length !== allQuestions.length) {
+      else if (questionAnswer?.questions.length !== allQuestions?.length) {
          dispatch(questionAnswered(answer));
       }
-      console.log(questionAnswer);
+      console.log(answer);
+      console.log(endTime, startTime);
+      setStartTime();
 
       await axios.post(apiUrl + "result", { userId: user._id, questions: [...questionAnswer.questions, answer] })
          .then(async ({ data }) => {
+            console.log(data);
             await axios.patch(apiUrl + "user/" + user._id, {
                assessId: data.question._id
             })
                .then(() => {
-                  setActiveOption();
-                  dispatch(resetUser())
-                  dispatch(resetAssessment())
+                  setShowSubmitLoader("Submitted. Please wait...");
+                  setTimeout(() => {
+                     setShowSubmitLoader("no");
+                     exitFullScreenMode();
+                     setActiveOption();
+                     dispatch(resetUser())
+                     dispatch(resetAssessment())
+                  }, 2000);
+               })
+               .catch(({ message }) => {
+                  setShowSubmitLoader("no");
+                  toast(message, {
+                     type: "error",
+                     autoClose: 3000,
+                     theme: "colored",
+                     hideProgressBar: true
+                  })
                })
          })
          .catch(({ message }) => {
+
+            setShowSubmitLoader("no");
             toast(message, {
                type: "error",
                autoClose: 3000,
@@ -287,15 +360,15 @@ const QuestionStructures = () => {
    }
 
    useEffect(() => {
-      if (user.name === undefined) navigate("/");
+      if (user?.name === undefined) navigate("/");
    });
 
    useEffect(() => {
-      if (allQuestions.length === 0 && user.name !== undefined)
+      if (allQuestions?.length === 0 && user.name !== undefined)
          fetchQuestions();
    }, [allQuestions, fetchQuestions, user]);
 
-   const [lastQuestion, setLastQuestion] = useState(allQuestions.length === 1 ? allQuestions.length - counter : allQuestions.length - counter - 1);
+   const [lastQuestion, setLastQuestion] = useState(typeof (allQuestions) === "object" ? Object.keys(allQuestions).length === 1 ? Object.keys(allQuestions).length - counter : Object.keys(allQuestions).length - counter - 1 : allQuestions?.length === 1 ? allQuestions?.length - counter : allQuestions?.length - counter - 1);
    const [activeOption, setActiveOption] = useState();
 
 
@@ -334,11 +407,24 @@ const QuestionStructures = () => {
       return stageRef.current?.toDataURL()
       // return (JSON.stringify(dataURL));
    };
-
+   console.log(typeof (allQuestions));
+   console.log(typeof (allQuestions) === "object");
+   console.log(((typeof (allQuestions) === "object" ? (counter / Object.keys(allQuestions).length) : (counter / allQuestions.length)) + "%"));
    return (
       <ParentContainer>
-         <div style={{ width: "100%", textAlign: "right", fontSize: "20px", height: "max-content", fontWeight: "600", color: questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("Demo") ? "#aaa" : "#fff" }}>
-            Demo
+         <div style={{ width: "100%", height: "4px", borderRadius: "10px", backgroundColor: "red" }}>
+            <div style={{ width: (typeof (allQuestions) === "object" ? ((counter / Object.keys(allQuestions).length) * 100).toFixed(0) : ((counter / allQuestions.length) * 100).toFixed(0)) + "%", height: "100%", borderRadius: "10px", backgroundColor: "blue" }}>
+            </div>
+         </div>
+         <div style={{ width: "100%", textAlign: "right", fontSize: "20px", height: "max-content", fontWeight: "600", color: "#aaa" }}>
+            {question?.questionType}
+            {
+               questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("Demo") ?
+                  <span>
+                     Demo
+                  </span>
+                  : ""
+            }
          </div>
          {
             question !== undefined ?
@@ -346,15 +432,15 @@ const QuestionStructures = () => {
                   <div style={{ height: "87vh", paddingTop: "5vh" }}>
                      {
                         question.structure >= 1 && question.structure <= 4 ?
-                           <Structure1to4 question={question} activeOption={activeOption} setActiveOption={setActiveOption} />
+                           <Structure1to4 setStartTime={setStartTime} question={question} activeOption={activeOption} setActiveOption={setActiveOption} />
                            : question.structure === 5 ?
-                              <Structure5 question={question} selected={selected} handleSelection={handleSelection} />
+                              <Structure5 setStartTime={setStartTime} question={question} selected={selected} handleSelection={handleSelection} />
                               : question.structure === 6 ?
-                                 <Structure6 question={question} activeOption={activeOption} setActiveOption={setActiveOption} />
+                                 <Structure6 setStartTime={setStartTime} question={question} activeOption={activeOption} setActiveOption={setActiveOption} />
                                  : question.structure === 7 ?
-                                    <Structure7 question={question} leftColumn={questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("AAA") ? leftColumn.Demo : leftColumn.Ques} rightColumn={questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("AAA") ? rightColumn.Demo : rightColumn.Ques} handleSelection={handleSelection} />
+                                    <Structure7 setStartTime={setStartTime} question={question} leftColumn={questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("AAA") ? leftColumn.Demo : leftColumn.Ques} rightColumn={questionDet?.quesCategory?.categoryName && questionDet?.quesCategory?.categoryName.includes("AAA") ? rightColumn.Demo : rightColumn.Ques} handleSelection={handleSelection} />
                                     : question.structure === 8 ?
-                                       <Structure8 stageRef={stageRef} showGrid={showGrid} question={question} />
+                                       <Structure8 setStartTime={setStartTime} stageRef={stageRef} showGrid={showGrid} question={question} />
                                        : ""
                      }
                   </div>
@@ -368,6 +454,15 @@ const QuestionStructures = () => {
                   </div>
                </>
                : <></>
+         }
+         {
+            showSubmitLoader !== "no" ?
+               <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", position: "absolute", top: 0, backgroundColor: "#ffffffa2", width: "100%" }}>
+                  <Loading width={150} height="unset" color="#ff0000" />
+                  <span>{showSubmitLoader}</span>
+               </div>
+               :
+               <></>
          }
       </ParentContainer>
    )
