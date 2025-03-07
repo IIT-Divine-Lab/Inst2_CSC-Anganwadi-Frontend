@@ -364,7 +364,7 @@ const QuestionStructures = () => {
    });
 
    useEffect(() => {
-      if (allQuestions?.length === 0 && user.name !== undefined)
+      if (user.name !== undefined && ((typeof (allQuestions) === "object" && Object.keys(allQuestions).length === 0) || allQuestions?.length === 0))
          fetchQuestions();
    }, [allQuestions, fetchQuestions, user]);
 
@@ -407,9 +407,9 @@ const QuestionStructures = () => {
       return stageRef.current?.toDataURL()
       // return (JSON.stringify(dataURL));
    };
-   console.log(typeof (allQuestions));
-   console.log(typeof (allQuestions) === "object");
-   console.log(((typeof (allQuestions) === "object" ? (counter / Object.keys(allQuestions).length) : (counter / allQuestions.length)) + "%"));
+   // console.log(typeof (allQuestions));
+   // console.log(typeof (allQuestions) === "object");
+   // console.log(((typeof (allQuestions) === "object" ? (counter / Object.keys(allQuestions).length) : (counter / allQuestions.length)) + "%"));
    return (
       <ParentContainer>
          <div style={{ width: "100%", height: "4px", borderRadius: "10px", backgroundColor: "red" }}>
