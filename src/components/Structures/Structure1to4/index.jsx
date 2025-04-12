@@ -138,12 +138,33 @@ const Structure1to4 = ({ setStartTime, setActiveOption, activeOption, question }
                 alt=""
               />
             </div>
-            :
-            <></>
+            : question.structure === 4 ?
+              <>
+                {
+                  !question.questionOnlyText && question.questionSound ?
+                    <audio loops={false} id='audioQues' onLoad={() => setStartTime(Date.now())} className='audioQues' src={question?.questionSound !== undefined ? getSourceURL(question?.questionSound, "audio") : undefined}></audio>
+                    : ""
+                }
+                <div className='flex items-center mb-10'>
+                  {
+                    !question.questionOnlyText ?
+                      <HiSpeakerWave onClick={playAudio} className='text-6xl bg-[#2d8dfe] p-2.5 text-white rounded-xl cursor-pointer' />
+                      : ""
+                  }
+                  {
+                    question.questionSoundText ?
+                      <span className='ml-5 text-2xl font-semibold'>{question.questionSoundText}</span>
+                      :
+                      <span className='text-2xl font-semibold'>{question.questionOnlyText}</span>
+                  }
+                </div>
+              </>
+              : <>
+              </>
         }
         <div className={`${structure === 1 || structure === 2 ? 'mt-5' :
-          'landscape:ml-10'} portrait:mt-10`}>
-          <div className={`grid ${question.totalOptions === 2 ? 'landscape:grid-cols-2 portrait:grid-cols-2' : question.totalOptions === 4 ? 'landscape:grid-cols-4 portrait:grid-cols-2' : question?.questionImage?.after === undefined && question.totalOptions === 3 ? 'landscape:grid-cols-3 portrait:grid-cols-2' : 'grid-cols-2'} gap-5`}>
+          ''} portrait:mt-10`}>
+          <div className={`grid ${question.totalOptions === 2 ? 'grid-cols-2' : question.totalOptions === 4 ? 'landscape:grid-cols-4 portrait:grid-cols-2' : question.totalOptions === 3 ? 'landscape:grid-cols-3 portrait:grid-cols-2' : ''} gap-5`}>
             {
               Array(question?.totalOptions || 2).fill(0).map((_, index) => {
                 return <>

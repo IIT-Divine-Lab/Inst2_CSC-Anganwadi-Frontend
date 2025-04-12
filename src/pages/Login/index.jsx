@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import toggleLoading from '../../redux/actions/loadingActions';
 import data from "../../assets/AnganwadiCentreData.json"
 import Header from '../../components/Header';
+import { HiOutlineArrowSmRight } from 'react-icons/hi';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -112,10 +113,10 @@ const Login = () => {
         <Header page="login" />
         <div className="form-subcontainer">
           <div className="form-heading-container">
-            <h1 className="form-heading">Let’s Get Started!</h1>
+            <h1 className="form-heading font-bold text-2xl">Let’s Get Started!</h1>
             <h3 className="form-subheading">Fill in your details to begin your fun assessment. 😊</h3>
           </div>
-          <div className="form" id='userForm'>
+          <div className="form !mt-10" id='userForm'>
             <div className='form-field-container'>
               <label className="form-field-label">Name</label>
               <input type="text" value={name} onChange={(e) => setName(e.currentTarget.value)} name="name" id="name" className="form-field" placeholder='Enter your full name' />
@@ -189,7 +190,7 @@ const Login = () => {
             </div>
           </div>
           <div className="form-submit" onClick={submitUserDetails}>
-            Start Assessment ➡
+            Start Assessment&nbsp;<HiOutlineArrowSmRight size={28} />
           </div>
         </div>
       </div>

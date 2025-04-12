@@ -7,6 +7,7 @@ import toggleLoading from './redux/actions/loadingActions';
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import QuestionStructures from './pages/QuestionStructures';
+import Loading from './components/Loading';
 
 const App = () => {
   const loading = useSelector((state) => state.loading);
@@ -24,7 +25,7 @@ const App = () => {
         .catch((error) => {
           setServerWorking(false);
         })
-    }, 5000);
+    }, 2000);
   }, [dispatch])
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const App = () => {
     <>
       {
         loading ?
-          <>Loading</>
+          <Loading />
           :
           <BrowserRouter>
             <Routes>

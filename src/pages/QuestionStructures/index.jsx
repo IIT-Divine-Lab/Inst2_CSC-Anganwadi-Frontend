@@ -26,6 +26,11 @@ import DemoSpeaker from "../../assets/Images/demoSpeaker.png"
 import Structure1to4 from '../../components/Structures/Structure1to4';
 import Structure8 from '../../components/Structures/Structure8';
 import Structure5 from '../../components/Structures/Structure5';
+import { HiOutlineArrowSmRight, HiOutlineCheck } from "react-icons/hi";
+import toggleLoading from '../../redux/actions/loadingActions';
+import { toast } from 'react-toastify';
+import Loading from '../../components/Loading';
+import { TbRefresh } from 'react-icons/tb';
 
 const fullScreenMode = () => {
   const element = document.documentElement;
@@ -53,7 +58,7 @@ const exitFullScreenMode = () => {
 
 const QuestionStructures = () => {
   const user = useSelector(state => state?.user);
-  const orientation = useSelector(state => state?.orientation);
+  const loading = useSelector(state => state?.loading);
   const allQuestions = useSelector(state => state?.allQuestions);
   const counter = useSelector(state => state?.currentQuestion?.counter);
   const questionDet = useSelector(state => state?.allQuestions)?.[counter];
@@ -71,6 +76,8 @@ const QuestionStructures = () => {
   const [showSubmitLoader, setShowSubmitLoader] = useState("no");
   const [startTime, setStartTime] = useState(undefined);
   const [selected, setSelected] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
   const [activeOption, setActiveOption] = useState();
   const [lastQuestion, setLastQuestion] = useState(typeof (allQuestions) === "object" ? Object.keys(allQuestions).length === 1 ? Object.keys(allQuestions).length - counter : Object.keys(allQuestions).length - counter - 1 : allQuestions?.length === 1 ? allQuestions?.length - counter : allQuestions?.length - counter - 1);
@@ -169,11 +176,13 @@ const QuestionStructures = () => {
   }
 
   const fetchQuestions = useCallback(async () => {
+    dispatch(toggleLoading(true))
     await axios.post(apiUrl + "assessment/agewise", { ageGroup: user.age })
       .then(({ data }) => {
         console.log(data);
         dispatch(getQuestions(data.questions));
         dispatch(currentQuestion(0));
+        dispatch(toggleLoading(false))
       })
       .catch(({ message }) => {
         toast(message, {
@@ -252,7 +261,7 @@ const QuestionStructures = () => {
     else {
       dispatch(questionAnswered(answer));
     }
-    // fullScreenMode();
+    fullScreenMode();
     console.log("\n Counter", counter);
     dispatch(currentQuestion(counter + 1));
     setLastQuestion(typeof (allQuestions) === "object" ? Object.keys(allQuestions).length - counter - 2 : allQuestions?.length - counter - 2);
@@ -265,9 +274,10 @@ const QuestionStructures = () => {
 
   const submitAssessment = async () => {
     const endTime = Date.now();
-    setShowSubmitLoader("Submitting");
+    setSubmitting(true);
     let answer;
     if (activeOption === undefined && question.questionType === "single") {
+      setSubmitting(false);
       toast.info("Please select an answer", {
         autoClose: 1500,
         theme: "colored",
@@ -276,6 +286,7 @@ const QuestionStructures = () => {
       return;
     }
     if (selected.length === 0 && question.questionType === "multi") {
+      setSubmitting(false);
       toast.info("Please select an answer", {
         autoClose: 1500,
         theme: "colored",
@@ -330,17 +341,17 @@ const QuestionStructures = () => {
           assessId: data.question._id
         })
           .then(() => {
-            setShowSubmitLoader("Submitted. Please wait...");
+            setSubmitted(true);
             setTimeout(() => {
-              setShowSubmitLoader("no");
               exitFullScreenMode();
               setActiveOption();
               dispatch(resetUser())
               dispatch(resetAssessment())
-            }, 2000);
+            }, 20000);
           })
           .catch(({ message }) => {
-            setShowSubmitLoader("no");
+            setSubmitting(false);
+            setSubmitted(false);
             toast(message, {
               type: "error",
               autoClose: 3000,
@@ -350,8 +361,8 @@ const QuestionStructures = () => {
           })
       })
       .catch(({ message }) => {
-
-        setShowSubmitLoader("no");
+        setSubmitting(false);
+        setSubmitted(false);
         toast(message, {
           type: "error",
           autoClose: 3000,
@@ -411,52 +422,130 @@ const QuestionStructures = () => {
   }, [allQuestions, fetchQuestions, user]);
 
   return (
-    <QuestionContainer>
+    <>
       {
-        question !== undefined ?
-          <>
-            <div className={`${question.structure === 1 || question.structure === 2 || question.structure === 8 ? 'pt-2 mb-2' : 'pt-16 mb-6 pb-6'} border ${category?.categoryName?.split(" : ")[1].toLowerCase() === 'demo' ? 'border-[#14141459]' : 'border-white'} h-max relative rounded-xl w-full px-[5%]`}>
+        !loading ?
+          !submitting && !submitted ?
+            <QuestionContainer>
               {
-                question.structure >= 1 && question.structure <= 4 ?
-                  <Structure1to4 activeOption={activeOption} setActiveOption={setActiveOption} setStartTime={setStartTime} question={question} />
-                  : question.structure === 5 ?
-                    <Structure5 selected={selected} handleSelection={handleSelection} setStartTime={setStartTime} question={question} />
-                    : question.structure === 6 ?
-                      <Structure6 activeOption={activeOption} setActiveOption={setActiveOption} setStartTime={setStartTime} question={question} />
-                      : question.structure === 8 ?
-                        <Structure8 setStartTime={setStartTime} stageRef={stageRef} showGrid={showGrid} question={question} />
-                        :
-                        <></>
-              }
-              {
-                category?.categoryName?.split(" : ")[1].toLowerCase() === "demo" ?
-                  <div className='absolute text-[#2d8dfe] bg-[#2d8dfe2a] top-2 left-2 text-sm px-2 py-0.5'>
-                    Practice Question
-                  </div>
-                  :
-                  <></>
-              }
-            </div>
-            <div className='w-full flex justify-end'>
-              {
-                lastQuestion !== 0 ?
+                question !== undefined ?
+                  <>
+                    <div className={`${question.structure === 1 || question.structure === 2 || question.structure === 8 ? 'pt-2 mb-2' : 'pt-16 mb-6 pb-6'} border ${category?.categoryName?.split(" : ")[1].toLowerCase() === 'demo' ? 'border-[#2d8dfe2a]' : 'border-white'} h-max relative rounded-xl w-full px-[5%]`}>
+                      {
+                        question.structure >= 1 && question.structure <= 4 ?
+                          <Structure1to4 activeOption={activeOption} setActiveOption={setActiveOption} setStartTime={setStartTime} question={question} />
+                          : question.structure === 5 ?
+                            <Structure5 selected={selected} handleSelection={handleSelection} setStartTime={setStartTime} question={question} />
+                            : question.structure === 6 ?
+                              <Structure6 activeOption={activeOption} setActiveOption={setActiveOption} setStartTime={setStartTime} question={question} />
+                              : question.structure === 8 ?
+                                <Structure8 setStartTime={setStartTime} stageRef={stageRef} showGrid={showGrid} question={question} />
+                                :
+                                <></>
+                      }
+                      {
+                        category?.categoryName?.split(" : ")[1].toLowerCase() === "demo" ?
+                          <div className='absolute text-[#2d8dfe] bg-[#2d8dfe2a] top-2 left-2 text-sm px-2 py-0.5'>
+                            Practice Question
+                          </div>
+                          :
+                          <></>
+                      }
+                    </div>
+                    <div className='w-full flex justify-end'>
+                      {
+                        lastQuestion !== 0 ?
 
-                  <Button onClick={saveQuestion}>
-                    <span>Next</span>
-                    <span className='ml-3'>➡</span>
-                  </Button> :
-                  <Button onClick={submitAssessment}>
-                    <span>Submit</span>
-                    <span className='ml-3'>✔</span>
-                  </Button>
+                          <Button className={`${(question.structure >= 1 && question.structure <= 6 && question.structure !== 5)
+                            ?
+                            (activeOption === undefined || activeOption === null)
+                              ?
+                              '!bg-[#b5bac0] !text-[#74797a] !cursor-not-allowed'
+                              :
+                              ''
+                            :
+                            question.structure !== 8
+                              ?
+                              selected.length === 0
+                                ?
+                                '!bg-[#b5bac0] !text-[#74797a] !cursor-not-allowed'
+                                :
+                                ''
+                              :
+                              ''
+                            }`} onClick={saveQuestion}>
+                            <span>Next</span>
+                            <span className='ml-3'><HiOutlineArrowSmRight size={28} /></span>
+                          </Button> :
+                          <Button onClick={submitAssessment}>
+                            <span>Submit</span>
+                            <span className='ml-3'><HiOutlineCheck size={28} /></span>
+                          </Button>
+                      }
+                    </div>
+                  </>
+                  :
+                  <>
+                  </>
               }
-            </div>
-          </>
+            </QuestionContainer >
+            :
+            <QuestionContainer progress={true}>
+              <div className='h-full flex flex-col justify-center items-center w-full '>
+                {
+                  !submitted ?
+                    <>
+                      <div className='w-40 h-40 flex justify-center items-center'>
+                        <TbRefresh className='animate-spin' color='#2d8dfe' size={120} />
+                      </div>
+                      <div className='text-center'>
+                        <h2 className='text-2xl font-bold'>Submitting ...</h2>
+                        <h2 className='text-base mt-2'>Please wait while your assessment is being submitted.</h2>
+                        <h2 className='text-sm italic'>Do not press back or refresh button</h2>
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div className='w-40 h-40 flex justify-center items-center'>
+                        <svg
+                          className="w-32 h-32"
+                          viewBox="0 0 50 50"
+                        >
+                          <circle
+                            className="stroke-[#2d8dfe] fill-[#2d8dfe] stroke-[3] animate-draw-circle"
+                            cx="26"
+                            cy="25"
+                            r="20"
+                          />
+                          <path
+                            className={`stroke-white fill-none stroke-[3] animate-draw-check ${submitting ? "opacity-100" : "opacity-0"}`}
+                            fill="none"
+                            d="M14 27l7 7 16-16"
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          />
+                        </svg>
+                      </div>
+                      <div className='text-center'>
+                        <h2 className='text-2xl font-bold'>Great Job!</h2>
+                        <h2 className='text-base mt-2'>You've completed the assessment. Well done! 😊</h2>
+                      </div>
+                      <Button className="font-normal mt-10 !text-base h-9" onClick={() => {
+                        setActiveOption();
+                        dispatch(resetUser())
+                        dispatch(resetAssessment())
+                      }}>
+                        <span>Take another assessment</span>
+                        <span className='ml-1'><HiOutlineArrowSmRight size={20} /></span>
+                      </Button>
+                    </>
+                }
+              </div>
+            </QuestionContainer>
           :
-          <>
-          </>
+          <></>
       }
-    </QuestionContainer >
+    </>
   )
 }
 
