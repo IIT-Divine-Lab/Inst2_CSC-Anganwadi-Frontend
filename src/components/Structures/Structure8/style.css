@@ -1,0 +1,21 @@
+.actionBtn {
+   background-color: #cacaca;
+   border: 1px solid #5f5f5f;
+   outline: 0;
+   font-size: 40px;
+   padding: 8px;
+   color: #5f5f5f;
+   cursor: not-allowed;
+}
+
+.middle {
+   margin: 0 10px;
+   transform: rotateY(180deg);
+}
+
+.active {
+   cursor: pointer;
+   background-color: white;
+   border: 1px solid black;
+   color: black;
+}
