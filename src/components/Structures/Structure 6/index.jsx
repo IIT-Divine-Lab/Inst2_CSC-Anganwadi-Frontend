@@ -35,7 +35,7 @@ const Structure6 = ({ setStartTime, activeOption, setActiveOption, question }) =
             alt=""
           />
         </div>
-        <div className='w-auto important(w-auto) relative flex flex-row items-center justify-center h-80 portrait:mt-8 landscape:ml-8'>
+        <div className='w-auto important(w-auto) relative flex flex-row items-center justify-center h-80 portrait:mt-8 landscape:ml-24'>
           <img
             src={question.answerImage !== undefined ? getSourceURL(question.answerImage) : undefined}
             alt=""

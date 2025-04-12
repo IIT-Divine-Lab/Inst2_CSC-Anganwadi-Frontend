@@ -31,12 +31,12 @@ const Header = ({ page, progress = false }) => {
                 <h2 className='landscape:text-lg font-medium'>Question Type : </h2>
                 <h6 className='portrait:ml-2 text-[#2d8dfe] landscape:mt-2 font-semibold landscape:text-2xl'>{getQuestionType(question.questionType)}</h6>
               </div>
-              <hr className={`portrait:hidden w-2 h-full bg-white ${progress ? 'hidden' : ''}`} />
+              <hr className={`portrait:hidden border-none w-2 h-full bg-white ${progress ? 'hidden' : ''}`} />
               <div className={`py-4 px-5 landscape:w-[80%]`} style={progress ? { width: "100%" } : {}}>
                 <h6 className='portrait:hidden font-medium'>Your Progress</h6>
                 <h3 className='text-[#2d8dfe] landscape:mt-2 font-semibold landscape:text-2xl' style={progress ? { color: "green" } : {}}>{progress ? '100' : (allQuestions && ((counter / allQuestions.length) * 100).toFixed(0)) || 0}% Completed</h3>
                 <div className={`bg-[#2d8dfe1a] w-full h-1 rounded mt-1 ${progress ? 'hidden' : ''}`}>
-                  <div className='h-1 bg-[#2d8dfe]' style={{ width: (allQuestions && (counter / allQuestions.length) * 100) + "%" }}></div>
+                  <div className='h-1 rounded bg-[#2d8dfe]' style={{ width: (allQuestions && (counter / allQuestions.length) * 100) + "%" }}></div>
                 </div>
 
               </div>

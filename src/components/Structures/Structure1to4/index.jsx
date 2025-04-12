@@ -174,7 +174,7 @@ const Structure1to4 = ({ setStartTime, setActiveOption, activeOption, question }
                     ref={(el) => containerRef.current[index] = el}
                   >
                     <img
-                      className={`rounded-3xl w-full border-2 ${activeOption === (index + 1) ? 'border-[#2d8dfe]' : ''}`}
+                      className={`rounded-3xl w-full border-2 ${activeOption === (index + 1) ? 'border-[#2d8dfe]' : 'border-white'}`}
                       onLoad={() => setStartTime(Date.now())}
                       ref={(el) => imgRef.current[index] = el}
                       src={question.option !== undefined ?

@@ -47,9 +47,9 @@ const Login = () => {
 
   const submitUserDetails = async () => {
     // console.log();
-    if (name === "" || year === "none" || month === "none" || gender === "" || selectedCentre === "") {
+    if (name === "" || year === "none" || month === "none" || gender === "" || selectedState === "" || selectedDistrict === "" || selectedCentre === "") {
       toast("Fill all details to proceed", {
-        type: "warning",
+        type: "error",
         autoClose: 2000,
         theme: "colored",
         hideProgressBar: true
@@ -114,7 +114,7 @@ const Login = () => {
         <div className="form-subcontainer">
           <div className="form-heading-container">
             <h1 className="form-heading font-bold text-2xl">Let’s Get Started!</h1>
-            <h3 className="form-subheading">Fill in your details to begin your fun assessment. 😊</h3>
+            <h3 className="form-subheading">Fill in your details to begin your assessment. 😊</h3>
           </div>
           <div className="form !mt-10" id='userForm'>
             <div className='form-field-container'>

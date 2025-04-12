@@ -25,7 +25,7 @@ const App = () => {
         .catch((error) => {
           setServerWorking(false);
         })
-    }, 2000);
+    }, 100);
   }, [dispatch])
 
   useEffect(() => {
